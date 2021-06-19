@@ -59,7 +59,7 @@ const getMachineStatusPayload = (): IMachineStatus => {
     result: {
       ...machineStatus.result,
       "ts-current": now,
-      "ts-last-update": now - parseInt(minutes.toString().slice(-1)),
+      "ts-last-update": now - parseInt(minutes.toString().slice(-1)) * 60,
       "carwash-state": isWashing
         ? CarWashState.MS_PROG_RUNNING
         : CarWashState.MS_READY_TO_RECEIVE_WASH_PROGRAM,
