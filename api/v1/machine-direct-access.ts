@@ -75,35 +75,47 @@ export default (request: VercelRequest, response: VercelResponse) => {
   let responseCode: number;
   let payload: object;
 
-  if (!authenticate(request.headers)) {
-    responseCode = 403;
-    payload = { debugMessage: "Credential is not allowed to use this API" };
-  } else {
-    // Verify request data
-    const body: RequestData = request.body ?? {};
-    const requestBodyKeys = ["deviceUUID", "method", "path", "payload"];
-    let missingField;
-    for (const field of requestBodyKeys) {
-      if (!Object.keys(body).includes(field)) {
-        missingField = field;
-        break;
-      }
-    }
+  const body: RequestData = request.body ?? {};
 
-    if (missingField) {
-      responseCode = 400;
-      payload = { debugMessage: `Field '${missingField}' is mandatory` };
+  if (request.method === "POST") {
+    if (!authenticate(request.headers)) {
+      responseCode = 403;
+      payload = { debugMessage: "Credential is not allowed to use this API" };
     } else {
-      switch (body.path) {
-        case "state/v1":
-          responseCode = 200;
-          payload = getMachineStatusPayload();
+      // Verify request data
+      const requestBodyKeys = ["deviceUUID", "method", "path", "payload"];
+      let missingField;
+      for (const field of requestBodyKeys) {
+        if (!Object.keys(body).includes(field)) {
+          missingField = field;
           break;
-        default:
-          responseCode = 403;
-          payload = { debugMessage: "(Role/method/path) tuple not allowed" };
+        }
+      }
+
+      if (missingField) {
+        responseCode = 400;
+        payload = { debugMessage: `Field '${missingField}' is mandatory` };
+      } else {
+        switch (body.path) {
+          case "state/v1":
+            responseCode = 200;
+            payload = getMachineStatusPayload();
+            break;
+          default:
+            responseCode = 403;
+            payload = { debugMessage: "(Role/method/path) tuple not allowed" };
+        }
       }
     }
+  } else {
+    responseCode = 405;
+    payload = {
+      timestamp: new Date().toISOString().replace("Z", "+00:00"),
+      status: responseCode,
+      error: "Method Not Allowed",
+      message: "",
+      path: "/v1/machine-direct-access",
+    };
   }
 
   const responseData: ResponseData =
