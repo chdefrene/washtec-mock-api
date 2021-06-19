@@ -1,6 +1,7 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import machineStatus from "../../mock-data/machine-status.json";
-import { authenticate } from "../../helpers";
+import selectTicket from "../../mock-data/select-ticket.json";
+import { authenticate, isWashing } from "../../helpers";
 
 enum CarWashState {
   MS_UNKNOWN,
@@ -18,8 +19,8 @@ enum CarWashState {
 
 interface RequestData {
   deviceUUID: string;
-  method: "GET";
-  path: "state/v1";
+  method: "GET" | "POST";
+  path: "state/v1" | "select-ticket/v1";
   payload: string;
 }
 
@@ -29,7 +30,7 @@ interface ResponseData {
   debugMessage?: string; // Only for errors
 }
 
-interface IMachineStatus {
+interface MachineStatusResponse {
   "transaction-id": number;
   success: boolean;
   msg: string | null; // empty on success == true | error message if success == false
@@ -43,15 +44,16 @@ interface IMachineStatus {
   };
 }
 
-const getMachineStatusPayload = (): IMachineStatus => {
+interface SelectTicketResponse {
+  "transaction-id": number;
+  success: boolean;
+  msg: string; // empty on success == true | error message if success == false;
+  result: {};
+}
+
+const getMachineStatusPayload = (): MachineStatusResponse => {
   const now = Math.floor(Date.now() / 1000); // Current time in seconds
   const minutes = new Date().getUTCMinutes();
-
-  // Simulate a wash running for 10 minutes three times each hour.
-  const isWashing =
-    (0 <= minutes && minutes <= 10) ||
-    (20 <= minutes && minutes <= 30) ||
-    (40 <= minutes && minutes <= 50);
 
   return {
     ...machineStatus,
@@ -60,14 +62,25 @@ const getMachineStatusPayload = (): IMachineStatus => {
       ...machineStatus.result,
       "ts-current": now,
       "ts-last-update": now - parseInt(minutes.toString().slice(-1)) * 60,
-      "carwash-state": isWashing
+      "carwash-state": isWashing()
         ? CarWashState.MS_PROG_RUNNING
         : CarWashState.MS_READY_TO_RECEIVE_WASH_PROGRAM,
-      "remaining-washtime": isWashing
+      "remaining-washtime": isWashing()
         ? 10 - parseInt(minutes.toString().slice(-1))
         : 0,
-      "current-ticket-id": isWashing ? Math.floor(Math.random() * 10 ** 4) : 0,
+      "current-ticket-id": isWashing()
+        ? Math.floor(Math.random() * 10 ** 4)
+        : 0,
     },
+  };
+};
+
+const getSelectTicketPayload = (): SelectTicketResponse => {
+  return {
+    ...selectTicket,
+    "transaction-id": Math.floor(Math.random() * 10 ** 9),
+    success: !isWashing(),
+    msg: isWashing() ? "the selected machine is already in use" : "",
   };
 };
 
@@ -75,14 +88,13 @@ export default (request: VercelRequest, response: VercelResponse) => {
   let responseCode: number;
   let payload: object;
 
-  const body: RequestData = request.body ?? {};
-
   if (request.method === "POST") {
     if (!authenticate(request.headers)) {
       responseCode = 403;
       payload = { debugMessage: "Credential is not allowed to use this API" };
     } else {
       // Verify request data
+      const body: RequestData = request.body ?? {};
       const requestBodyKeys = ["deviceUUID", "method", "path", "payload"];
       let missingField;
       for (const field of requestBodyKeys) {
@@ -101,6 +113,10 @@ export default (request: VercelRequest, response: VercelResponse) => {
             responseCode = 200;
             payload = getMachineStatusPayload();
             break;
+          case "select-ticket/v1":
+            responseCode = isWashing() ? 400 : 200;
+            payload = getSelectTicketPayload();
+            break;
           default:
             responseCode = 403;
             payload = { debugMessage: "(Role/method/path) tuple not allowed" };
@@ -118,15 +134,16 @@ export default (request: VercelRequest, response: VercelResponse) => {
     };
   }
 
-  const responseData: ResponseData =
-    responseCode === 200
-      ? {
-          responseCode,
-          // WashTec includes indentation in their JSON response output
-          payload: JSON.stringify(payload, null, 4),
-        }
-      : payload;
+  const isError = "debugMessage" in payload;
+
+  const responseData: ResponseData = isError
+    ? payload
+    : {
+        responseCode,
+        // WashTec includes indentation in their JSON response output
+        payload: JSON.stringify(payload, null, 4),
+      };
 
   // We can only call VercelResponse once
-  response.status(responseCode).json(responseData);
+  response.status(isError ? responseCode : 200).json(responseData);
 };

@@ -25,3 +25,16 @@ export const authenticate = (
     Object.keys(headers ?? {}).includes(header.toLowerCase())
   );
 };
+
+/**
+ * Simulate a wash running for 10 minutes three times each hour.
+ */
+export const isWashing = (): boolean => {
+  const minutes = new Date().getUTCMinutes();
+
+  return (
+    (0 <= minutes && minutes <= 10) ||
+    (20 <= minutes && minutes <= 30) ||
+    (40 <= minutes && minutes <= 50)
+  );
+};
