@@ -20,8 +20,6 @@ export const authenticate = (
   if (apiType === "machine-interface")
     headerKeys.push("MachineDirectAccessRole");
 
-  console.log(headerKeys);
-
   return headerKeys.every((header) =>
     Object.keys(headers ?? {}).includes(header.toLowerCase())
   );

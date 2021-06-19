@@ -1,7 +1,7 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import machines from "../../../../mock-data/machines.json";
 import { DateTime } from "luxon";
-import { authenticate } from "../../../../helpers";
+import { authenticate, isWashing } from "../../../../helpers";
 
 export default (request: VercelRequest, response: VercelResponse) => {
   let responseCode: number;
@@ -15,12 +15,13 @@ export default (request: VercelRequest, response: VercelResponse) => {
       responseCode = 200;
       payload = machines;
 
-      // Update timestamp for each machine
+      // Update some values for each machine
       Object.keys(payload).forEach((key) => {
         payload[key] = {
           ...payload[key],
+          isBusy: isWashing(),
           machineDbLastComeInTimestampUtc: DateTime.utc()
-            .minus({ minute: Math.floor(Math.random() * 10) })
+            .minus({ minute: Math.round(Math.random() * 10) })
             .toFormat("yyyy-MM-dd HH:MM:ss"),
         };
       });

@@ -58,21 +58,17 @@ const getMachineStatusPayload = (): MachineStatusResponse => {
 
   return {
     ...machineStatus,
-    "transaction-id": Math.floor(Math.random() * 10 ** 9),
+    "transaction-id": Math.round(Math.random() * 10 ** 9),
     result: {
       ...machineStatus.result,
-      "ts-current": now.toSeconds(),
-      "ts-last-update": now
-        .minus({
-          minute: duration,
-        })
-        .toSeconds(),
+      "ts-current": Math.round(now.toSeconds()),
+      "ts-last-update": Math.round(now.minus({ minute: duration }).toSeconds()),
       "carwash-state": isWashing()
         ? CarWashState.MS_PROG_RUNNING
         : CarWashState.MS_READY_TO_RECEIVE_WASH_PROGRAM,
       "remaining-washtime": isWashing() ? duration : 0,
       "current-ticket-id": isWashing()
-        ? Math.floor(Math.random() * 10 ** 4)
+        ? Math.round(Math.random() * 10 ** 4)
         : 0,
     },
   };
@@ -81,7 +77,7 @@ const getMachineStatusPayload = (): MachineStatusResponse => {
 const getSelectTicketPayload = (): SelectTicketResponse => {
   return {
     ...selectTicket,
-    "transaction-id": Math.floor(Math.random() * 10 ** 9),
+    "transaction-id": Math.round(Math.random() * 10 ** 9),
     success: !isWashing(),
     msg: isWashing() ? "the selected machine is already in use" : "",
   };
@@ -111,18 +107,24 @@ export default (request: VercelRequest, response: VercelResponse) => {
         responseCode = 400;
         payload = { debugMessage: `Field '${missingField}' is mandatory` };
       } else {
-        switch (body.path) {
-          case "state/v1":
-            responseCode = 200;
-            payload = getMachineStatusPayload();
-            break;
-          case "select-ticket/v1":
-            responseCode = isWashing() ? 400 : 200;
-            payload = getSelectTicketPayload();
-            break;
-          default:
-            responseCode = 403;
-            payload = { debugMessage: "(Role/method/path) tuple not allowed" };
+        try {
+          switch (body.path) {
+            case "state/v1":
+              if (body.method !== "GET") throw Error;
+              responseCode = 200;
+              payload = getMachineStatusPayload();
+              break;
+            case "select-ticket/v1":
+              if (body.method !== "POST") throw Error;
+              responseCode = isWashing() ? 400 : 200;
+              payload = getSelectTicketPayload();
+              break;
+            default:
+              throw Error;
+          }
+        } catch {
+          responseCode = 403;
+          payload = { debugMessage: "(Role/method/path) tuple not allowed" };
         }
       }
     }
