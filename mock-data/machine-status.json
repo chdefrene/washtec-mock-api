@@ -1,0 +1,13 @@
+{
+  "transaction-id": 7296,
+  "success": true,
+  "msg": "",
+  "result": {
+    "ts-current": 1624023963,
+    "ts-last-update": 1624023962,
+    "operation-mode": 1,
+    "carwash-state": 10,
+    "remaining-washtime": 0,
+    "current-ticket-id": 0
+  }
+}
