@@ -1,10 +1,11 @@
 import { IncomingHttpHeaders } from "http";
+import { DateTime } from "luxon";
 
 interface AuthenticationHeaders extends IncomingHttpHeaders {
   Username: string;
   "Password-Utf8-Base64": string;
   "Interaction-Uuid": string;
-  MachineDirectAccessRole: string;
+  MachineDirectAccessRole?: string;
 }
 
 /**
@@ -12,14 +13,14 @@ interface AuthenticationHeaders extends IncomingHttpHeaders {
  * Return `true` if authenticated successfully, `false` otherwise.
  */
 export const authenticate = (
-  headers: Partial<AuthenticationHeaders>
+  headers: Partial<AuthenticationHeaders>,
+  apiType: "digitalhub" | "machine-interface"
 ): boolean => {
-  const headerKeys = [
-    "Username",
-    "Password-Utf8-Base64",
-    "Interaction-Uuid",
-    "MachineDirectAccessRole",
-  ];
+  const headerKeys = ["Username", "Password-Utf8-Base64", "Interaction-Uuid"];
+  if (apiType === "machine-interface")
+    headerKeys.push("MachineDirectAccessRole");
+
+  console.log(headerKeys);
 
   return headerKeys.every((header) =>
     Object.keys(headers ?? {}).includes(header.toLowerCase())
@@ -30,7 +31,7 @@ export const authenticate = (
  * Simulate a wash running for 10 minutes three times each hour.
  */
 export const isWashing = (): boolean => {
-  const minutes = new Date().getUTCMinutes();
+  const minutes = DateTime.utc().minute;
 
   return (
     (0 <= minutes && minutes <= 10) ||

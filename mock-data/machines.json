@@ -1,0 +1,241 @@
+{
+  "10227778": {
+    "externalId": null,
+    "isInMachineDb": true,
+    "siteId": 1072839001,
+    "name": "Vaskemaskin Grønland",
+    "postcode": "0650",
+    "place": "Oslo",
+    "street": "Enerhaugkleiva",
+    "streetNumber": "",
+    "nativeServiceOwnerDisplayName": "Bertel O. Steen AS",
+    "nativeServiceOwnerId": 10077024,
+    "siteDisplayName": "DtoRemoteSite_Def_Name_",
+    "devUUID": "047-102277780000",
+    "latitude": 59.911502,
+    "longitude": 10.767424,
+    "products": [
+      "ACCESS_WT",
+      "CONNECTED",
+      "WASH_DH",
+      "WTPLUS"
+    ],
+    "reqCurrencyId": 578,
+    "reqCurrencyName": "NOK",
+    "timeZone": "CET",
+    "serviceContactId": "1030",
+    "countryCode": "NO",
+    "modelText": "Softcare Pro",
+    "typeText": "Rollover",
+    "model": 2,
+    "type": 1,
+    "vatPercentage": 25.00,
+    "isBusy": false,
+    "services": [
+      {
+        "nativeServiceId": 1135367020,
+        "prg": 1,
+        "optional": false,
+        "name": "Vask 1",
+        "price": 1
+      },
+      {
+        "nativeServiceId": 1135367021,
+        "prg": 2,
+        "optional": false,
+        "name": "Vask 2",
+        "price": 1
+      },
+      {
+        "nativeServiceId": 1135375005,
+        "prg": 3,
+        "optional": false,
+        "name": "Vask 3",
+        "price": 1
+      },
+      {
+        "nativeServiceId": 1135383008,
+        "prg": 4,
+        "optional": false,
+        "name": "Vask 4",
+        "price": 1
+      }
+    ],
+    "washTicketFromDigitalHub": true,
+    "remoteConnectivityActive": true,
+    "remoteAccessAllowed": true,
+    "machineDbLastComeInTimestampUtc": "2021-06-19 11:17:10"
+  },
+  "10230515": {
+    "externalId": null,
+    "isInMachineDb": true,
+    "siteId": 1072839001,
+    "name": "Vaskemaskin Lille Grensen",
+    "postcode": "0158",
+    "place": "Oslo",
+    "street": "Akersgata",
+    "streetNumber": "45",
+    "nativeServiceOwnerDisplayName": "Bertel O. Steen AS",
+    "nativeServiceOwnerId": 10077024,
+    "siteDisplayName": "DtoRemoteSite_Def_Name_",
+    "devUUID": "047-102305150000",
+    "latitude": 59.913990,
+    "longitude": 10.742434,
+    "products": [
+      "ACCESS_WT",
+      "CONNECTED",
+      "WASH_DH",
+      "WTPLUS"
+    ],
+    "reqCurrencyId": 578,
+    "reqCurrencyName": "NOK",
+    "timeZone": "CET",
+    "serviceContactId": "1030",
+    "countryCode": "NO",
+    "modelText": "Softcare Pro",
+    "typeText": "Rollover",
+    "model": 2,
+    "type": 1,
+    "vatPercentage": 25.00,
+    "isBusy": false,
+    "services": [
+      {
+        "nativeServiceId": 1135367020,
+        "prg": 1,
+        "optional": false,
+        "name": "Vask 1",
+        "price": 1
+      },
+      {
+        "nativeServiceId": 1135367021,
+        "prg": 2,
+        "optional": false,
+        "name": "Vask 2",
+        "price": 1
+      },
+      {
+        "nativeServiceId": 1135375005,
+        "prg": 3,
+        "optional": false,
+        "name": "Vask 3",
+        "price": 1
+      },
+      {
+        "nativeServiceId": 1135383008,
+        "prg": 4,
+        "optional": false,
+        "name": "Vask 4",
+        "price": 1
+      }
+    ],
+    "washTicketFromDigitalHub": true,
+    "remoteConnectivityActive": true,
+    "remoteAccessAllowed": true,
+    "machineDbLastComeInTimestampUtc": "2021-06-19 11:17:10"
+  },
+  "10230516": {
+    "externalId": null,
+    "isInMachineDb": true,
+    "siteId": 1072839001,
+    "name": "Vaskehall Lørenskog",
+    "postcode": "1561",
+    "place": "Oslo",
+    "street": "Solheimveien",
+    "streetNumber": "11",
+    "nativeServiceOwnerDisplayName": "Bertel O. Steen AS",
+    "nativeServiceOwnerId": 10077024,
+    "siteDisplayName": "DtoRemoteSite_Def_Name_",
+    "devUUID": "047-102305160000",
+    "latitude": 59.932325,
+    "longitude": 10.931335,
+    "products": [
+      "ACCESS_WT",
+      "CONNECTED",
+      "WASH_DH",
+      "WTPLUS"
+    ],
+    "reqCurrencyId": 578,
+    "reqCurrencyName": "NOK",
+    "timeZone": "CET",
+    "serviceContactId": "1030",
+    "countryCode": "NO",
+    "modelText": "Softcare Pro",
+    "typeText": "Rollover",
+    "model": 2,
+    "type": 1,
+    "vatPercentage": 25.00,
+    "isBusy": false,
+    "services": [],
+    "washTicketFromDigitalHub": false,
+    "remoteConnectivityActive": false,
+    "remoteAccessAllowed": false,
+    "machineDbLastComeInTimestampUtc": "2021-06-19 11:17:10"
+  },
+  "10237767": {
+    "externalId": null,
+    "isInMachineDb": true,
+    "siteId": 1072839001,
+    "name": "Vaskemaskin Kokstad",
+    "postcode": "5068",
+    "place": "Bergen",
+    "street": "Kokstaddalen",
+    "streetNumber": "53",
+    "nativeServiceOwnerDisplayName": "Bertel O. Steen AS",
+    "nativeServiceOwnerId": 10077024,
+    "siteDisplayName": "DtoRemoteSite_Def_Name_",
+    "devUUID": "047-102377670000",
+    "latitude": 60.296543,
+    "longitude": 5.254115,
+    "products": [
+      "ACCESS_WT",
+      "CONNECTED",
+      "WASH_DH",
+      "WTPLUS"
+    ],
+    "reqCurrencyId": 578,
+    "reqCurrencyName": "NOK",
+    "timeZone": "CET",
+    "serviceContactId": "1030",
+    "countryCode": "NO",
+    "modelText": "Softcare Pro",
+    "typeText": "Rollover",
+    "model": 2,
+    "type": 1,
+    "vatPercentage": 25.00,
+    "isBusy": false,
+    "services": [
+      {
+        "nativeServiceId": 1135367020,
+        "prg": 1,
+        "optional": false,
+        "name": "Vask 1",
+        "price": 1
+      },
+      {
+        "nativeServiceId": 1135367021,
+        "prg": 2,
+        "optional": false,
+        "name": "Vask 2",
+        "price": 1
+      },
+      {
+        "nativeServiceId": 1135375005,
+        "prg": 3,
+        "optional": false,
+        "name": "Vask 3",
+        "price": 1
+      },
+      {
+        "nativeServiceId": 1135383008,
+        "prg": 4,
+        "optional": false,
+        "name": "Vask 4",
+        "price": 1
+      }
+    ],
+    "washTicketFromDigitalHub": true,
+    "remoteConnectivityActive": true,
+    "remoteAccessAllowed": true,
+    "machineDbLastComeInTimestampUtc": "2021-06-19 11:17:10"
+  }
+}

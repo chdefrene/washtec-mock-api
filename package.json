@@ -19,5 +19,8 @@
   "homepage": "https://github.com/chdefrene/washtec-mock-api#readme",
   "devDependencies": {
     "@vercel/node": "^1.11.1"
+  },
+  "dependencies": {
+    "luxon": "^1.27.0"
   }
 }

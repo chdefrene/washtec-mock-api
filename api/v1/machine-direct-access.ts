@@ -2,6 +2,7 @@ import { VercelRequest, VercelResponse } from "@vercel/node";
 import machineStatus from "../../mock-data/machine-status.json";
 import selectTicket from "../../mock-data/select-ticket.json";
 import { authenticate, isWashing } from "../../helpers";
+import { DateTime } from "luxon";
 
 enum CarWashState {
   MS_UNKNOWN,
@@ -52,22 +53,24 @@ interface SelectTicketResponse {
 }
 
 const getMachineStatusPayload = (): MachineStatusResponse => {
-  const now = Math.floor(Date.now() / 1000); // Current time in seconds
-  const minutes = new Date().getUTCMinutes();
+  const now = DateTime.utc();
+  const duration = 10 - parseInt(now.minute.toString().slice(-1));
 
   return {
     ...machineStatus,
     "transaction-id": Math.floor(Math.random() * 10 ** 9),
     result: {
       ...machineStatus.result,
-      "ts-current": now,
-      "ts-last-update": now - parseInt(minutes.toString().slice(-1)) * 60,
+      "ts-current": now.toSeconds(),
+      "ts-last-update": now
+        .minus({
+          minute: duration,
+        })
+        .toSeconds(),
       "carwash-state": isWashing()
         ? CarWashState.MS_PROG_RUNNING
         : CarWashState.MS_READY_TO_RECEIVE_WASH_PROGRAM,
-      "remaining-washtime": isWashing()
-        ? 10 - parseInt(minutes.toString().slice(-1))
-        : 0,
+      "remaining-washtime": isWashing() ? duration : 0,
       "current-ticket-id": isWashing()
         ? Math.floor(Math.random() * 10 ** 4)
         : 0,
@@ -89,7 +92,7 @@ export default (request: VercelRequest, response: VercelResponse) => {
   let payload: object;
 
   if (request.method === "POST") {
-    if (!authenticate(request.headers)) {
+    if (!authenticate(request.headers, "machine-interface")) {
       responseCode = 403;
       payload = { debugMessage: "Credential is not allowed to use this API" };
     } else {
