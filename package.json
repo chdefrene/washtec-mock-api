@@ -21,6 +21,7 @@
     "@vercel/node": "^1.11.1"
   },
   "dependencies": {
-    "luxon": "^1.27.0"
+    "luxon": "^1.27.0",
+    "node-fetch": "^2.6.1"
   }
 }

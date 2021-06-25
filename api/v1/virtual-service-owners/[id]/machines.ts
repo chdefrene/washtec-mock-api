@@ -4,32 +4,31 @@ import { DateTime } from "luxon";
 import { authenticate, isWashing } from "../../../../helpers";
 
 export default (request: VercelRequest, response: VercelResponse) => {
-  let responseCode: number;
-  let payload: object;
+  const { method, headers } = request;
 
-  if (request.method === "GET") {
-    if (!authenticate(request.headers, "digitalhub")) {
-      responseCode = 403;
-      payload = { debugMessage: "Credential is not allowed to use this API" };
-    } else {
-      responseCode = 200;
-      payload = machines;
+  // Check request method
+  if (method !== "GET")
+    return response
+      .status(400)
+      .json({ debugMessage: "Mandatory GET parameter 'limit' missing" });
 
-      // Update some values for each machine
-      Object.keys(payload).forEach((key) => {
-        payload[key] = {
-          ...payload[key],
-          isBusy: isWashing(),
-          machineDbLastComeInTimestampUtc: DateTime.utc()
-            .minus({ minute: Math.round(Math.random() * 10) })
-            .toFormat("yyyy-MM-dd HH:MM:ss"),
-        };
-      });
-    }
-  } else {
-    responseCode = 400;
-    payload = { debugMessage: "Mandatory GET parameter 'limit' missing" };
-  }
+  // Handle authentication
+  if (!authenticate(headers, "digitalhub"))
+    return response
+      .status(403)
+      .json({ debugMessage: "Credential is not allowed to use this API" });
 
-  response.status(responseCode).json(payload);
+  // Update some values for each machine
+  const payload = machines;
+  Object.keys(payload).forEach((key) => {
+    payload[key] = {
+      ...payload[key],
+      isBusy: isWashing(),
+      machineDbLastComeInTimestampUtc: DateTime.utc()
+        .minus({ minute: Math.round(Math.random() * 10) })
+        .toFormat("yyyy-MM-dd HH:MM:ss"),
+    };
+  });
+
+  return response.status(200).json(payload);
 };
