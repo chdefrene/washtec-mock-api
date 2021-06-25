@@ -1,11 +1,37 @@
 import { IncomingHttpHeaders } from "http";
-import { DateTime } from "luxon";
+import fetch from "node-fetch";
 
 interface AuthenticationHeaders extends IncomingHttpHeaders {
   Username: string;
   "Password-Utf8-Base64": string;
   "Interaction-Uuid": string;
   MachineDirectAccessRole?: string;
+}
+
+interface TimerCheckStartResponse {
+  timer: string;
+  request_id: string;
+  status: string;
+  now: number;
+  message: string;
+  start_time: number;
+  start_seconds: number;
+  seconds_elapsed: number;
+  seconds_remaining: number;
+  new_start_time: number;
+  new_start_seconds: number;
+}
+
+interface TimerCheckStatusResponse {
+  timer: string;
+  request_id: string;
+  status: string;
+  now: number;
+  message: string;
+  start_time: number;
+  start_seconds: number;
+  seconds_elapsed: number;
+  seconds_remaining: number;
 }
 
 /**
@@ -26,14 +52,23 @@ export const authenticate = (
 };
 
 /**
- * Simulate a wash running for 10 minutes three times each hour.
+ * Get current timer status, or `null` if timer is not running.
  */
-export const isWashing = (): boolean => {
-  const minutes = DateTime.utc().minute;
+export const getTimerStatus = async (
+  timerId: string
+): Promise<TimerCheckStatusResponse> => {
+  const response = await fetch(`https://timercheck.io/${timerId}`);
 
-  return (
-    (0 <= minutes && minutes <= 10) ||
-    (20 <= minutes && minutes <= 30) ||
-    (40 <= minutes && minutes <= 50)
-  );
+  return response.ok ? response.json() : null;
+};
+
+/**
+ * Start the provided timer for 5 minutes.
+ */
+export const startTimer = async (
+  timerId: string
+): Promise<TimerCheckStartResponse> => {
+  const response = await fetch(`https://timercheck.io/${timerId}/300`);
+
+  return response.json();
 };

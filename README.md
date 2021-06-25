@@ -25,8 +25,11 @@ The Content-Type HTTP header should be set to `application/json`
 
 #### Simulated washing state
 
-The API simulates the machines being in use between minute 0 through 10, 20 through 30, and 40 through 50. E.g. if you
-make the request at 12:39 the machine will be free, but if you make it at 12:40 it will be occupied.
+The mock API simulates a machine being in use by utilizing the [TimerCheck.io](https://alestic.com/2015/07/timercheck-scheduled-events-monitoring/) API. When you start a wash, or check the machine status, the provided `deviceUUID` attribute will used to create and retrieve timers automatically.
+
+Each started wash will last for **5 minutes**. If you want to simulate multiple washes simultaneously, simply make the request again with a different `deviceUUID`.
+
+*Note: The machine list endpoint will return a `devUUID` attribute for each machine that can be used for this purpose.*
 
 ## Endpoints
 
@@ -51,6 +54,7 @@ Response example:
         "streetNumber": "11",
         "nativeServiceOwnerDisplayName": "Bertel O. Steen AS",
         "isBusy": false,
+        "devUUID": "047-102277780000",
         ...
     },
     "10230515": {
@@ -68,7 +72,7 @@ Expects the following request body:
 
 ```
 {
-    "deviceUUID": "a-random-id",
+    "deviceUUID": "your-unique-machine-id",
     "method": "GET",
     "path": "state/v1",
     "payload": "a-random-string"
@@ -92,7 +96,7 @@ Expects the following request body:
 
 ```
 {
-    "deviceUUID": "a-random-id",
+    "deviceUUID": "your-unique-machine-id",
     "method": "POST",
     "path": "select-ticket/v1",
     "payload": "a-random-string"

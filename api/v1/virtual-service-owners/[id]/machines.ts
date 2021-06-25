@@ -1,9 +1,9 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
-import machines from "../../../../mock-data/machines.json";
 import { DateTime } from "luxon";
-import { authenticate, isWashing } from "../../../../helpers";
+import machines from "../../../../mock-data/machines.json";
+import { authenticate, getTimerStatus } from "../../../../helpers";
 
-export default (request: VercelRequest, response: VercelResponse) => {
+export default async (request: VercelRequest, response: VercelResponse) => {
   const { method, headers } = request;
 
   // Check request method
@@ -20,15 +20,18 @@ export default (request: VercelRequest, response: VercelResponse) => {
 
   // Update some values for each machine
   const payload = machines;
-  Object.keys(payload).forEach((key) => {
+
+  for (const key of Object.keys(payload)) {
+    const timer = await getTimerStatus(payload[key].devUUID);
+
     payload[key] = {
       ...payload[key],
-      isBusy: isWashing(),
-      machineDbLastComeInTimestampUtc: DateTime.utc()
-        .minus({ minute: Math.round(Math.random() * 10) })
-        .toFormat("yyyy-MM-dd HH:MM:ss"),
+      isBusy: Boolean(timer),
+      machineDbLastComeInTimestampUtc: DateTime.fromSeconds(
+        timer?.start_time ?? DateTime.utc().toSeconds()
+      ).toFormat("yyyy-MM-dd HH:mm:ss"),
     };
-  });
+  }
 
   return response.status(200).json(payload);
 };

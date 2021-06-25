@@ -49,10 +49,14 @@ export default async (request: VercelRequest, response: VercelResponse) => {
 
   // Make request to mock machine
   try {
-    const { path: machinePath, method: machineMethod } = machineBody;
+    const {
+      path: machinePath,
+      method: machineMethod,
+      deviceUUID,
+    } = machineBody;
 
     const machineResponse = await fetch(
-      `${protocol}://${process.env.VERCEL_URL}/api/machine-interface/${machinePath}`,
+      `${protocol}://${process.env.VERCEL_URL}/api/machine-interface/${machinePath}?machineId=${deviceUUID}`,
       { method: machineMethod }
     );
 
@@ -63,7 +67,8 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     };
 
     return response.status(200).json(responseData);
-  } catch {
+  } catch (e) {
+    console.error(e);
     return response
       .status(403)
       .json({ debugMessage: "(Role/method/path) tuple not allowed" });

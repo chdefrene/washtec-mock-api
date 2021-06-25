@@ -1,6 +1,6 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import machineStatus from "../../../mock-data/machine-status.json";
-import { isWashing } from "../../../helpers";
+import { getTimerStatus } from "../../../helpers";
 import { DateTime } from "luxon";
 
 enum CarWashState {
@@ -31,30 +31,36 @@ interface MachineStatusResponse {
   };
 }
 
-const getPayload = (): MachineStatusResponse => {
-  const now = DateTime.utc();
-  const duration = 10 - parseInt(now.minute.toString().slice(-1));
+const getPayload = async (
+  deviceUUID: string
+): Promise<MachineStatusResponse> => {
+  const timer = await getTimerStatus(deviceUUID);
+  const now = timer?.now ?? DateTime.utc().toSeconds();
 
   return {
     ...machineStatus,
     "transaction-id": Math.round(Math.random() * 10 ** 9),
     result: {
       ...machineStatus.result,
-      "ts-current": Math.round(now.toSeconds()),
-      "ts-last-update": Math.round(now.minus({ minute: duration }).toSeconds()),
-      "carwash-state": isWashing()
+      "ts-current": Math.round(now),
+      "ts-last-update": Math.round(timer?.start_time ?? now),
+      "carwash-state": timer
         ? CarWashState.MS_PROG_RUNNING
         : CarWashState.MS_READY_TO_RECEIVE_WASH_PROGRAM,
-      "remaining-washtime": isWashing() ? duration : 0,
-      "current-ticket-id": isWashing()
-        ? Math.round(Math.random() * 10 ** 4)
+      "remaining-washtime": Math.round(timer?.seconds_remaining ?? 0),
+      "current-ticket-id": timer
+        ? parseInt(`${timer.start_time}`.slice(-4))
         : 0,
     },
   };
 };
 
-export default (request: VercelRequest, response: VercelResponse) => {
-  if (request.method !== "GET") throw Error;
+export default async (request: VercelRequest, response: VercelResponse) => {
+  const deviceUUID = request.query["machineId"];
 
-  return response.status(200).json(getPayload());
+  if (request.method !== "GET" || !deviceUUID) throw Error;
+
+  const payload = await getPayload(deviceUUID as string);
+
+  return response.status(200).json(payload);
 };
